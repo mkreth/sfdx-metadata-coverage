@@ -1,18 +1,16 @@
 # sfdx-project-metadata-coverage
 
-[![NPM](https://img.shields.io/npm/v/@salesforce/plugin-template.svg?label=@salesforce/plugin-template)](https://www.npmjs.com/package/@salesforce/plugin-template) [![CircleCI](https://circleci.com/gh/salesforcecli/plugin-template/tree/main.svg?style=shield)](https://circleci.com/gh/salesforcecli/plugin-template/tree/main) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-template.svg)](https://npmjs.org/package/@salesforce/plugin-template) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-template/main/LICENSE.txt)
-
 This plugin displays information from the [Metadata Coverage Report](https://developer.salesforce.com/docs/metadata-coverage) for metadata files in a SFDX project.
 
 ## Installation into the Salesforce CLI
 
 ```bash
-$ sfdx plugins:install https://github.com/mkreth/sfdx-project-metadata-coverage
+$ sfdx plugins:install https://github.com/mkreth/sfdx-metadata-coverage
 ```
 
 ## Issues
 
-Please report any issues at https://github.com/mkreth/sfdx-project-metadata-coverage
+Please report any issues at https://github.com/mkreth/sfdx-metadata-coverage/issues
 
 ## Commands
 
