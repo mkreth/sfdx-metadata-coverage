@@ -1,0 +1,18 @@
+[
+  {
+    "command": "mag:mdcoverage:report",
+    "plugin": "@mkreth/sfdx-metadata-coverage",
+    "flags": [
+      "source",
+      "showuncovered",
+      "checkmetadataapi",
+      "checksourcetracking",
+      "checkunlockedpackagingwithoutnamespace",
+      "checkunlockedpackagingwithnamespace",
+      "checkmanagedpackaging",
+      "checkchangesets",
+      "json",
+      "loglevel"
+    ]
+  }
+]
