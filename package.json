@@ -105,7 +105,7 @@
     "posttest": "yarn lint && yarn test:deprecation-policy && yarn test:command-reference",
     "prepack": "sf-prepack",
     "prepublish": "sf-prepack",
-    "prepare": "sf-install",
+    "prepare": "sf-prepack",
     "pretest": "sf-compile-test",
     "test": "sf-test",
     "test:command-reference": "./bin/run commandreference:generate --erroronwarnings",
