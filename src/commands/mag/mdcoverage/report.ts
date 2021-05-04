@@ -207,6 +207,7 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
 
       return response;
     } catch (ex) {
+      this.ux.error(ex);
       throw new SfdxError(ex);
     }
   }
