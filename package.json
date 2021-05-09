@@ -81,13 +81,8 @@
       "@salesforce/plugin-command-reference"
     ],
     "topics": {
-      "mag": {
-        "description": "Various sfdx commands from Magnus Kreth",
-        "subtopics": {
-          "mdcoverage": {
-            "description": "Commands to analyse project metadata coverage"
-          }
-        }
+      "mdcoverage": {
+        "description": "Commands related to metadata coverage for files in a project"
       }
     }
   },

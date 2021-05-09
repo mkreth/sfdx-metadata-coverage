@@ -12,7 +12,7 @@ import { readFileSync } from 'fs-extra';
 import { core, flags, FlagsConfig, SfdxCommand, TableOptions } from '@salesforce/command';
 import { NamedPackageDir, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
-import fetchMetadataCoverageReport from '../../../coveragereport';
+import fetchMetadataCoverageReport from '../../coveragereport';
 
 interface MetadataTypeCoverageChannels {
   [key: string]: boolean;
