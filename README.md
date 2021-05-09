@@ -25,31 +25,50 @@ Please report any issues at https://github.com/mkreth/sfdx-metadata-coverage/iss
 
 <!-- commands -->
 
-### `sfdx project:coverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+- [`sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-mdcoveragereport--d-directory---showuncovered---checkmetadataapi---checksourcetracking---checkunlockedpackagingwithoutnamespace---checkunlockedpackagingwithnamespace---checkmanagedpackaging---checkchangesets---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+
+## `sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 displays metadata coverage information for metadata files in a SFDX project
 
 ```
 USAGE
-  $ sfdx project:coverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging]
+  $ sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking]
+  [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging]
   [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
-  -d, --source=source                                                               path of the source directory to scan for metadata files
+  -d, --source=source                                                               path of the source directory to scan
+                                                                                    for metadata files
+
   --checkchangesets                                                                 Check for Change Sets coverage
+
   --checkmanagedpackaging                                                           Check for Managed Packaging coverage
+
   --checkmetadataapi                                                                Check for Metadata Api coverage
+
   --checksourcetracking                                                             Check for Source Tracking coverage
-  --checkunlockedpackagingwithnamespace                                             Check for Unlocked Packaging (with Namespace) coverage
-  --checkunlockedpackagingwithoutnamespace                                          Check for Unlocked Packaging (without Namespace) coverage
+
+  --checkunlockedpackagingwithnamespace                                             Check for Unlocked Packaging (with
+                                                                                    Namespace) coverage
+
+  --checkunlockedpackagingwithoutnamespace                                          Check for Unlocked Packaging
+                                                                                    (without Namespace) coverage
+
   --json                                                                            format output as json
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for this command invocation
-  --showuncovered                                                                   show only metadata files that are uncovered by (any of) the selected deployment methods
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+  --showuncovered                                                                   show only metadata files that are
+                                                                                    uncovered by (any of) the selected
+                                                                                    deployment methods
 
 DESCRIPTION
   Displays metadata coverage information for the metadata files in the current project.
 
-  Detects metadata files in all package directories of the current project. Use --source to print metadata coverage information for a subset of metadata files in specific folders only.
+  Detects metadata files in all package directories of the current project. Use --source to print metadata coverage
+  information for a subset of metadata files in specific folders only.
 
   Use one of the --check... flags to display coverage information for the specified deployment method.
 
@@ -58,24 +77,38 @@ DESCRIPTION
 EXAMPLES
   $ sfdx project:metadata:coverage
   Finding metadata coverage information for metadata files... done
-  Package Directory  Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
-  -----------------  -----------  --------------  ---------------------  ------------  ---------------  --------------------------------------  -----------------------------------  -----------------  -----------
-  core               ApexClass    LogManager.cls  main/default/classes   true          true             true                                    true                                 true               true
-  ext                Profile      Admin.profile   main/default/profiles  true          true             true                                    true                                 true               false
+  Package Directory  Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked
+  Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
+  -----------------  -----------  --------------  ---------------------  ------------  ---------------
+  --------------------------------------  -----------------------------------  -----------------  -----------
+  core               ApexClass    LogManager.cls  main/default/classes   true          true             true
+                         true                                 true               true
+  ext                Profile      Admin.profile   main/default/profiles  true          true             true
+                         true                                 true               false
 
   $ sfdx project:metadata:coverage -d force-app/main/default/classes,force-app/main/default/profiles
   Finding metadata coverage information for metadata files... done
-  Type         Name            Folder                           Metadata Api  Source Tracking  Unlocked Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
-  -----------  --------------  -------------------------------  ------------  ---------------  --------------------------------------  -----------------------------------  -----------------  -----------
-  ApexClass    LogManager.cls  force-app/main/default/classes   true          true             true                                    true                                 true               true
-  Profile      Admin.profile   force-app/main/default/profiles  true          true             true                                    true                                 true               false
+  Type         Name            Folder                           Metadata Api  Source Tracking  Unlocked Packaging
+  (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
+  -----------  --------------  -------------------------------  ------------  ---------------
+  --------------------------------------  -----------------------------------  -----------------  -----------
+  ApexClass    LogManager.cls  force-app/main/default/classes   true          true             true
+                true                                 true               true
+  Profile      Admin.profile   force-app/main/default/profiles  true          true             true
+                true                                 true               false
 
-  $ sfdx project:metadata:coverage --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets --showuncovered
+  $ sfdx project:metadata:coverage --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets
+  --showuncovered
   Finding metadata coverage information for metadata files... done
-  Type         Name            Folder                           Metadata Api  Unlocked Packaging (without Namespace)  Change Sets
-  -----------  --------------  -------------------------------  ------------  --------------------------------------  -----------
-  Profile      Admin.profile   force-app/main/default/profiles  true          true                                    false
+  Type         Name            Folder                           Metadata Api  Unlocked Packaging (without Namespace)
+  Change Sets
+  -----------  --------------  -------------------------------  ------------  --------------------------------------
+  -----------
+  Profile      Admin.profile   force-app/main/default/profiles  true          true
+  false
 ```
+
+_See code: [src/commands/mdcoverage/report.ts](https://github.com/mkreth/sfdx-metadata-coverage/blob/v0.2.0/src/commands/mdcoverage/report.ts)_
 
 <!-- commandsstop -->
 
