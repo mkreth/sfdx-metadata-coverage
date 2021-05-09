@@ -82,4 +82,5 @@ EXAMPLES
 ## License
 
 MIT (c) Magnus Kreth
-Licensed under the MIT license. For full license text, see file [LICENSE.txt](LICENSE.txt).
+
+For full license text, see file [LICENSE.txt](LICENSE.txt).
