@@ -33,9 +33,9 @@ Please report any issues at https://github.com/mkreth/sfdx-metadata-coverage/iss
 
 <!-- commands -->
 
-- [`sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-mdcoveragereport--d-directory---showuncovered---checkmetadataapi---checksourcetracking---checkunlockedpackagingwithoutnamespace---checkunlockedpackagingwithnamespace---checkmanagedpackaging---checkchangesets---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-mdcoveragereport--d-directory---showuncovered---checkmetadataapi---checksourcetracking---checkunlockedpackagingwithoutnamespace---checkunlockedpackagingwithnamespace---checkmanagedpackaging---checkchangesets---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking] [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging] [--checkchangesets] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 displays metadata coverage information for metadata files in a SFDX project
 
@@ -43,11 +43,15 @@ displays metadata coverage information for metadata files in a SFDX project
 USAGE
   $ sfdx mdcoverage:report [-d <directory>] [--showuncovered] [--checkmetadataapi] [--checksourcetracking]
   [--checkunlockedpackagingwithoutnamespace] [--checkunlockedpackagingwithnamespace] [--checkmanagedpackaging]
-  [--checkchangesets] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  [--checkchangesets] [--apiversion <string>] [--json] [--loglevel
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
-  -d, --source=source                                                               path of the source directory to scan
-                                                                                    for metadata files
+  -d, --sourcepath=sourcepath                                                       comma-separated list of paths to
+                                                                                    scan for metadata files
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
 
   --checkchangesets                                                                 Check for Change Sets coverage
 
@@ -75,7 +79,7 @@ OPTIONS
 DESCRIPTION
   Displays metadata coverage information for the metadata files in the current project.
 
-  Detects metadata files in all package directories of the current project. Use --source to print metadata coverage
+  Detects metadata files in all package directories of the current project. Use --sourcepath to print metadata coverage
   information for a subset of metadata files in specific folders only.
 
   Use one of the --check... flags to display coverage information for the specified deployment method.
@@ -83,18 +87,18 @@ DESCRIPTION
   Use --showuncovered to display only metadata files that are not covered by the selected deployment method(s).
 
 EXAMPLES
-  $ sfdx project:metadata:coverage
+  $ sfdx mdcoverage:report
   Finding metadata coverage information for metadata files... done
-  Package Directory  Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked
-  Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
-  -----------------  -----------  --------------  ---------------------  ------------  ---------------
+  Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked Packaging (without
+  Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
+  -----------  --------------  ---------------------  ------------  ---------------
   --------------------------------------  -----------------------------------  -----------------  -----------
-  core               ApexClass    LogManager.cls  main/default/classes   true          true             true
-                         true                                 true               true
-  ext                Profile      Admin.profile   main/default/profiles  true          true             true
-                         true                                 true               false
+  ApexClass    LogManager.cls  main/default/classes   true          true             true
+      true                                 true               true
+  Profile      Admin.profile   main/default/profiles  true          true             true
+      true                                 true               false
 
-  $ sfdx project:metadata:coverage -d force-app/main/default/classes,force-app/main/default/profiles
+  $ sfdx mdcoverage:report -d force-app/main/default/classes,force-app/main/default/profiles
   Finding metadata coverage information for metadata files... done
   Type         Name            Folder                           Metadata Api  Source Tracking  Unlocked Packaging
   (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
@@ -105,8 +109,7 @@ EXAMPLES
   Profile      Admin.profile   force-app/main/default/profiles  true          true             true
                 true                                 true               false
 
-  $ sfdx project:metadata:coverage --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets
-  --showuncovered
+  $ sfdx mdcoverage:report --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets --showuncovered
   Finding metadata coverage information for metadata files... done
   Type         Name            Folder                           Metadata Api  Unlocked Packaging (without Namespace)
   Change Sets

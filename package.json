@@ -1,7 +1,7 @@
 {
   "name": "@mkreth/sfdx-metadata-coverage",
   "description": "A Salesforce CLI plugin to report the metadata coverage for a project",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Magnus Kreth <magnus.kreth@gmx.de>",
   "bugs": "https://github.com/mkreth/sfdx-metadata-coverage/issues",
   "dependencies": {
