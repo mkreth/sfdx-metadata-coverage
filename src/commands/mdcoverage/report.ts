@@ -5,58 +5,35 @@
  * For full license text, see file LICENSE.txt in the repository root.
  */
 
-import * as path from 'path';
-import recursiveReaddir = require('recursive-readdir');
-import { parseString } from 'xml2js';
-import { readFileSync } from 'fs-extra';
 import { core, flags, FlagsConfig, SfdxCommand, TableOptions } from '@salesforce/command';
-import { NamedPackageDir, SfdxError } from '@salesforce/core';
-import { AnyJson } from '@salesforce/ts-types';
+import { SfdxError } from '@salesforce/core';
+
 import fetchMetadataCoverageReport from '../../coveragereport';
+import findMetadataFiles from '../../metadatafiles';
 
-interface MetadataTypeCoverageChannels {
-  [key: string]: boolean;
-  unlockedPackagingWithoutNamespace: boolean;
-  unlockedPackagingWithNamespace: boolean;
-  toolingApi: boolean;
-  sourceTracking: boolean;
-  metadataApi: boolean;
-  managedPackaging: boolean;
-  classicUnmanagedPackaging: boolean;
-  classicManagedPackaging: boolean;
-  changeSets: boolean;
-  apexMetadataApi: boolean;
-}
+import type { MetadataCoverageReport, MetadataTypeCoverageChannels } from '../../coveragereport';
+import type { MetadataFile } from '../../metadatafiles';
 
-interface MetadataFile {
-  path: string;
-  packageDirectory?: string;
-  folder: string;
-  fileName: string;
-  type?: string;
-  coverage?: MetadataTypeCoverageChannels;
-}
+type MetadataFileCoverage = {
+  file: MetadataFile;
+  coverage: MetadataTypeCoverageChannels;
+};
 
-interface MetadataFilesInDirectory {
-  dir: NamedPackageDir;
-  metadataFiles: MetadataFile[];
-}
-
-interface Response {
+type Response = {
   message?: string;
-  metadataCoverageReport?: MetadataFile[];
-}
+  metadataCoverageReport?: MetadataFileCoverage[];
+};
 
-interface ChannelFlag {
+type ChannelFlag = {
   key: string;
   columnKey: string;
   columnLabel: string;
   flagDescription: string;
-}
+};
 
-interface ChannelFlags {
+type ChannelFlags = {
   [key: string]: ChannelFlag;
-}
+};
 
 const CHECK_CHANNEL_FLAGS: ChannelFlags = {
   checkmetadataapi: {
@@ -105,41 +82,45 @@ export default class CoverageReportCommand extends SfdxCommand {
   public static description = messages.getMessage('commandDescription');
 
   public static examples = [
-    `$ sfdx project:metadata:coverage
+    `$ sfdx mdcoverage:report
 Finding metadata coverage information for metadata files... done
-Package Directory  Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
------------------  -----------  --------------  ---------------------  ------------  ---------------  --------------------------------------  -----------------------------------  -----------------  -----------
-core               ApexClass    LogManager.cls  main/default/classes   true          true             true                                    true                                 true               true
-ext                Profile      Admin.profile   main/default/profiles  true          true             true                                    true                                 true               false
-    `,
-    `$ sfdx project:metadata:coverage -d force-app/main/default/classes,force-app/main/default/profiles
+Type         Name            Folder                 Metadata Api  Source Tracking  Unlocked Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
+-----------  --------------  ---------------------  ------------  ---------------  --------------------------------------  -----------------------------------  -----------------  -----------
+ApexClass    LogManager.cls  main/default/classes   true          true             true                                    true                                 true               true
+Profile      Admin.profile   main/default/profiles  true          true             true                                    true                                 true               false
+`,
+    `$ sfdx mdcoverage:report -d force-app/main/default/classes,force-app/main/default/profiles
 Finding metadata coverage information for metadata files... done
 Type         Name            Folder                           Metadata Api  Source Tracking  Unlocked Packaging (without Namespace)  Unlocked Packaging (with Namespace)  Managed Packaging  Change Sets
 -----------  --------------  -------------------------------  ------------  ---------------  --------------------------------------  -----------------------------------  -----------------  -----------
 ApexClass    LogManager.cls  force-app/main/default/classes   true          true             true                                    true                                 true               true
 Profile      Admin.profile   force-app/main/default/profiles  true          true             true                                    true                                 true               false
-    `,
-    `$ sfdx project:metadata:coverage --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets --showuncovered
+`,
+    `$ sfdx mdcoverage:report --checkmetadataapi --checkunlockedpackagingwithoutnamespace --checkchangesets --showuncovered
 Finding metadata coverage information for metadata files... done
 Type         Name            Folder                           Metadata Api  Unlocked Packaging (without Namespace)  Change Sets
 -----------  --------------  -------------------------------  ------------  --------------------------------------  -----------
 Profile      Admin.profile   force-app/main/default/profiles  true          true                                    false
-    `,
+`,
   ];
 
   protected static flagsConfig: FlagsConfig = CoverageReportCommand.getFlagsConfig();
+
   protected static requiresUsername = false;
   protected static requiresDevhubUsername = false;
   protected static requiresProject = true;
 
   private static getFlagsConfig(): FlagsConfig {
     const flagsConfig: FlagsConfig = {
-      source: flags.directory({ char: 'd', description: messages.getMessage('sourceFlagDescription') }),
+      apiversion: flags.builtin(),
+      sourcepath: flags.directory({ char: 'd', description: messages.getMessage('sourcePathFlagDescription') }),
       showuncovered: flags.boolean({ description: messages.getMessage('showUncoveredFlagDescription') }),
     };
+
     Object.keys(CHECK_CHANNEL_FLAGS).forEach((key) => {
       flagsConfig[key] = flags.boolean({ description: messages.getMessage(CHECK_CHANNEL_FLAGS[key].flagDescription) });
     });
+
     return flagsConfig;
   }
 
@@ -147,38 +128,43 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     const response: Response = {};
 
     try {
-      // collect all metadata files (files ending with "-meta.xml")
       this.ux.startSpinner(messages.getMessage('statusSearchingMetadataMessage'));
-      const metadataFiles: MetadataFile[] = await this.findMetadataFiles();
+      const metadataFiles = await this.findMetadataFiles();
 
       // exit if there are no metadata files
       if (metadataFiles.length === 0) {
-        this.ux.warn('No metadata in any package directory - exiting');
-        response.message = 'No metadata in any package directory';
+        this.ux.warn('No metadata files found - exiting');
+        response.message = 'WARN - no metadata files found';
         return response;
       }
 
-      // retrieve md coverage report - https://mdcoverage.secure.force.com/services/apexrest/report?version=52
       this.ux.startSpinner(messages.getMessage('statusFetchMetadataCoverageMessage'));
-      const metadataCoverageReport = await fetchMetadataCoverageReport();
-
-      // determine the metadata type of a metadata file --> enrich metadata file with its type
-      this.ux.startSpinner(messages.getMessage('statusReadingMetadataTypeMessage'));
-      await Promise.all(metadataFiles.map((metadataFile) => this.determineMetadataType(metadataFile)));
+      const metadataCoverageReport = await this.fetchMetadataCoverageReport();
 
       // enrich metadata file with its coverage information from the metadata coverage report
       this.ux.startSpinner(messages.getMessage('statusFindingMetadataCoverageMessage'));
-      metadataFiles.forEach((metadataFile) => {
-        const metadataTypeCoverage = metadataCoverageReport[metadataFile.type];
-        metadataFile.coverage = metadataTypeCoverage.channels;
-      });
+      const metadataFileCoverages = metadataFiles
+        .map((metadataFile) => {
+          const metadataTypeCoverage = metadataCoverageReport[metadataFile.type];
+          if (metadataTypeCoverage && metadataTypeCoverage.channels) {
+            return {
+              file: metadataFile,
+              coverage: metadataTypeCoverage.channels,
+            } as MetadataFileCoverage;
+          } else {
+            this.ux.warn(
+              messages.getMessage('logMessageNoCoverageInformation', [metadataFile.path, metadataFile.type])
+            );
+          }
+        })
+        .filter((metadataFileCoverage) => metadataFileCoverage !== undefined);
 
       this.ux.stopSpinner(messages.getMessage('statusFinishedMessage'));
 
-      this.printResultTable(metadataFiles);
+      this.printResultTable(metadataFileCoverages);
 
       // return the metadata files and their coverage information
-      response.metadataCoverageReport = metadataFiles;
+      response.metadataCoverageReport = metadataFileCoverages;
 
       return response;
     } catch (ex) {
@@ -187,125 +173,29 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     }
   }
 
-  private recursiveReadPackageDir(
-    projectPath: string,
-    packageDir?: NamedPackageDir,
-    dir?: string
-  ): Promise<MetadataFilesInDirectory> {
-    return new Promise((resolve, reject) => {
-      recursiveReaddir(packageDir?.fullPath ?? dir)
-        .then((results: string[]) => {
-          const metaXmlFiles: string[] = results.filter((result: string) => result.endsWith('-meta.xml'));
-          const metadataFiles = metaXmlFiles.map((metaXmlFile: string) => {
-            const relativePath = path.relative(projectPath, metaXmlFile);
-            const folder = packageDir
-              ? path.relative(packageDir.fullPath, path.dirname(metaXmlFile))
-              : path.dirname(metaXmlFile);
-            const metadataFile: MetadataFile = {
-              path: metaXmlFile,
-              folder,
-              fileName: path.basename(relativePath, '-meta.xml'),
-            };
-            if (packageDir) {
-              metadataFile.packageDirectory = packageDir.name;
-            }
-            return metadataFile;
-          });
-          const metadataFilesInPackageDirectory: MetadataFilesInDirectory = {
-            dir: packageDir,
-            metadataFiles,
-          };
-          resolve(metadataFilesInPackageDirectory);
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
-    });
-  }
-
-  private async findMetadataFiles(): Promise<MetadataFile[]> {
-    const projectPath: string = this.project.getPath();
-    const packageDirectories: NamedPackageDir[] = this.project.getUniquePackageDirectories();
-    const source: string = this.flags.source as string;
-    const metadataFileResolvers: Array<Promise<MetadataFilesInDirectory>> = source
-      ? source.split(',').map((directory) => this.recursiveReadPackageDir(projectPath, null, directory))
-      : packageDirectories.map((packageDirectory) => this.recursiveReadPackageDir(projectPath, packageDirectory));
-    const metadataFilesInPackageDirectories: MetadataFilesInDirectory[] = await Promise.all(
-      metadataFileResolvers
-      // packageDirectories.map((packageDirectory) => this.recursiveReadPackageDir(projectPath, packageDirectory))
-    );
-
-    if (metadataFilesInPackageDirectories.length === 0) {
-      this.ux.warn(messages.getMessage('logMessageNoPackageDirectories'));
+  private findMetadataFiles(): Promise<MetadataFile[]> {
+    if (this.flags.sourcepath) {
+      const sourcepath = this.flags.sourcepath as string;
+      return findMetadataFiles(...sourcepath.split(','));
+    } else {
+      return findMetadataFiles(
+        ...this.project.getUniquePackageDirectories().map((packageDirectory) => packageDirectory.path)
+      );
     }
-    metadataFilesInPackageDirectories.forEach((metadataFilesInPackageDirectory: MetadataFilesInDirectory) => {
-      if (metadataFilesInPackageDirectory.metadataFiles.length === 0) {
-        this.ux.warn(
-          messages.getMessage('logMessageNoMetadataFilesInPackageDirectory', [metadataFilesInPackageDirectory.dir.name])
-        );
+  }
+
+  private fetchMetadataCoverageReport(): Promise<MetadataCoverageReport> {
+    if (this.flags.apiversion) {
+      const flagApiVersion = this.flags.apiversion as string;
+      return fetchMetadataCoverageReport(flagApiVersion);
+    } else {
+      const sourceApiVersion = this.project.getSfdxProjectJson().get('sourceApiVersion') as string;
+      if (sourceApiVersion) {
+        return fetchMetadataCoverageReport(sourceApiVersion);
       }
-    });
-
-    const metadataFiles: MetadataFile[] = [];
-    return metadataFiles.concat(
-      ...metadataFilesInPackageDirectories.map(
-        (metadataFilesInPackageDirectory: MetadataFilesInDirectory) => metadataFilesInPackageDirectory.metadataFiles
-      )
-    );
-  }
-
-  private determineMetadataType(metadataFile: MetadataFile): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    const data = readFileSync(metadataFile.path);
-    return new Promise((resolve, reject) => {
-      this.parseXml2Json(data)
-        .then((metadataJson) => {
-          Object.keys(metadataJson).forEach((type) => {
-            metadataFile.type = type;
-          });
-          resolve();
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
-    });
-  }
-
-  private parseXml2Json(data: string): Promise<AnyJson> {
-    return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      parseString(data, function (error, result) {
-        if (error) {
-          reject(error);
-        } else if (result) {
-          resolve(result);
-        }
-      });
-    });
-  }
-
-  private tableOptions(showPackageDir: boolean): TableOptions {
-    const options: TableOptions = {
-      columns: [
-        { key: 'type', label: messages.getMessage('columnTypeLabel') },
-        { key: 'fileName', label: messages.getMessage('columnNameLabel') },
-        { key: 'folder', label: messages.getMessage('columnFolderLabel') },
-      ],
-    };
-
-    if (showPackageDir) {
-      options.columns.unshift({ key: 'packageDirectory', label: messages.getMessage('columnPackageDirectoryLabel') });
     }
 
-    const includeAll = this.includeAllChecks();
-    Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
-      if (includeAll || (this.flags[flag] as boolean)) {
-        const channel = CHECK_CHANNEL_FLAGS[flag];
-        options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
-      }
-    });
-
-    return options;
+    return fetchMetadataCoverageReport();
   }
 
   private includeAllChecks(): boolean {
@@ -320,15 +210,30 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     return true;
   }
 
-  private printResultTable(metadataFiles: MetadataFile[]): void {
-    const showPackageDirectory = this.project.getUniquePackageDirectories().length > 1;
+  private printResultTable(metadataFiles: MetadataFileCoverage[]): void {
     const showUncoveredOnly = this.flags.showuncovered as boolean;
     const filteredMetadataFiles = showUncoveredOnly ? this.filterUncoveredMetadataFiles(metadataFiles) : metadataFiles;
 
-    this.ux.table(filteredMetadataFiles, this.tableOptions(showPackageDirectory));
+    const options: TableOptions = {
+      columns: [
+        { key: 'file.type', label: messages.getMessage('columnTypeLabel') },
+        { key: 'file.fileName', label: messages.getMessage('columnNameLabel') },
+        { key: 'file.folder', label: messages.getMessage('columnFolderLabel') },
+      ],
+    };
+
+    const includeAllChecks = this.includeAllChecks();
+    Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
+      if (includeAllChecks || (this.flags[flag] as boolean)) {
+        const channel = CHECK_CHANNEL_FLAGS[flag];
+        options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
+      }
+    });
+
+    this.ux.table(filteredMetadataFiles, options);
   }
 
-  private filterUncoveredMetadataFiles(metadataFiles: MetadataFile[]): MetadataFile[] {
+  private filterUncoveredMetadataFiles(metadataFiles: MetadataFileCoverage[]): MetadataFileCoverage[] {
     const includeAllChecks: boolean = this.includeAllChecks();
     const filterFlags = Object.keys(CHECK_CHANNEL_FLAGS).filter(
       (flag) => includeAllChecks || (this.flags[flag] as boolean)
