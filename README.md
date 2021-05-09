@@ -69,3 +69,5 @@ EXAMPLES
 ```
 
 <!-- commandsstop -->
+
+Licensed under the MIT license. For full license text, see file [LICENSE.txt](blob/main/LICENSE.txt).

@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, Magnus Kreth.
  * All rights reserved.
- * Licensed under the BSD 3-Clause license.
- * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ * Licensed under the MIT license.
+ * For full license text, see file LICENSE.txt in the repository root.
  */
+
 import * as path from 'path';
 import recursiveReaddir = require('recursive-readdir');
 import { parseString } from 'xml2js';
@@ -11,7 +12,7 @@ import { readFileSync } from 'fs-extra';
 import { core, flags, FlagsConfig, SfdxCommand, TableOptions } from '@salesforce/command';
 import { NamedPackageDir, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
-import fetch from 'node-fetch';
+import fetchMetadataCoverageReport from '../../../coveragereport';
 
 interface MetadataTypeCoverageChannels {
   [key: string]: boolean;
@@ -41,26 +42,6 @@ interface MetadataFilesInDirectory {
   metadataFiles: MetadataFile[];
 }
 
-interface MetadataTypeCoverage {
-  details: AnyJson[];
-  channels: MetadataTypeCoverageChannels;
-}
-
-interface MetadataCoverageReportVersions {
-  selected: number;
-  max: number;
-  min: number;
-}
-
-interface MetadataCoverageReport {
-  [type: string]: MetadataTypeCoverage;
-}
-
-interface MetadataCoverageReportResponse {
-  types: MetadataCoverageReport;
-  versions: MetadataCoverageReportVersions;
-}
-
 interface Response {
   message?: string;
   metadataCoverageReport?: MetadataFile[];
@@ -76,8 +57,6 @@ interface ChannelFlag {
 interface ChannelFlags {
   [key: string]: ChannelFlag;
 }
-
-const DEFAULT_API_VERSION = '51';
 
 const CHECK_CHANNEL_FLAGS: ChannelFlags = {
   checkmetadataapi: {
@@ -181,7 +160,7 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
 
       // retrieve md coverage report - https://mdcoverage.secure.force.com/services/apexrest/report?version=52
       this.ux.startSpinner(messages.getMessage('statusFetchMetadataCoverageMessage'));
-      const metadataCoverageReport = await this.fetchMetadataCoverageData();
+      const metadataCoverageReport = await fetchMetadataCoverageReport();
 
       // determine the metadata type of a metadata file --> enrich metadata file with its type
       this.ux.startSpinner(messages.getMessage('statusReadingMetadataTypeMessage'));
@@ -196,10 +175,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
 
       this.ux.stopSpinner(messages.getMessage('statusFinishedMessage'));
 
-      // create tabular project metadata coverage report
-      // const showPackageDirectory = this.project.getUniquePackageDirectories().length > 1;
-
-      // this.ux.table(metadataFiles, this.tableOptions(showPackageDirectory));
       this.printResultTable(metadataFiles);
 
       // return the metadata files and their coverage information
@@ -277,38 +252,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
         (metadataFilesInPackageDirectory: MetadataFilesInDirectory) => metadataFilesInPackageDirectory.metadataFiles
       )
     );
-  }
-
-  private async fetchMetadataCoverageData(): Promise<MetadataCoverageReport> {
-    const apiVersion: string = this.getApiVersion();
-    const metadataCoverageReportUrl = `https://mdcoverage.secure.force.com/services/apexrest/report?version=${apiVersion}`;
-    const requestSettings = { method: 'Get' };
-
-    return new Promise((resolve, reject) => {
-      fetch(metadataCoverageReportUrl, requestSettings)
-        .then((response) => {
-          return response.json() as Promise<MetadataCoverageReportResponse>;
-        })
-        .then((jsonResponse) => {
-          resolve(jsonResponse.types);
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
-    });
-  }
-
-  private getApiVersion(): string {
-    const sourceApiVersion: string = this.project.getSfdxProjectJson().get('sourceApiVersion') as string;
-    if (sourceApiVersion) {
-      if (sourceApiVersion.includes('.')) {
-        return sourceApiVersion.substring(0, sourceApiVersion.indexOf('.'));
-      } else {
-        return sourceApiVersion;
-      }
-    } else {
-      return DEFAULT_API_VERSION;
-    }
   }
 
   private determineMetadataType(metadataFile: MetadataFile): Promise<void> {
