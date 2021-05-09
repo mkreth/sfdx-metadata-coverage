@@ -108,7 +108,7 @@ EXAMPLES
   false
 ```
 
-_See code: [src/commands/mdcoverage/report.ts](https://github.com/mkreth/sfdx-metadata-coverage/blob/v0.2.0/src/commands/mdcoverage/report.ts)_
+_See code: [src/commands/mdcoverage/report.ts](https://github.com/mkreth/sfdx-metadata-coverage/blob/main/src/commands/mdcoverage/report.ts)_
 
 <!-- commandsstop -->
 
