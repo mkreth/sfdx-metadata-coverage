@@ -17,6 +17,14 @@ Maybe you plan to modernise an existing Salesforce implementation which exists a
 $ sfdx plugins:install https://github.com/mkreth/sfdx-metadata-coverage
 ```
 
+You will be prompted with a warning:
+
+```bash
+This plugin is not digitally signed and its authenticity cannot be verified. Continue installation y/n?
+```
+
+This plugins code is not officially signed by Salesforce, hence the warning during plugin installation. See [Install Trusted Unsigned Plug-Ins Automatically](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_allowlist.htm) in the [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/) for more information.
+
 ## Issues
 
 Please report any issues at https://github.com/mkreth/sfdx-metadata-coverage/issues
