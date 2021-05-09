@@ -2,6 +2,15 @@
 
 This plugin displays information from the [Metadata Coverage Report](https://developer.salesforce.com/docs/metadata-coverage) for metadata files in a SFDX project.
 
+It retrieves the metadata coverage information from the same Salesforce API that is used to render the Metadata Coverage Report. This API is not officially documented by Salesforce, hence, can change at any time which will break this plugin. Therefore, use this plugin at your own risk.
+
+## Why would you use this plugin
+
+If you have a team delivering a Salesforce implementation and you have chosen a delivery approach involving unlocked packages then you have probably setup multiple package directories for metadata files to go into different unlocked packages or to be part of a metadata package for anything that can not be included in an unlocked package at that time. You want to make sure that you detect early when somebody on your team has accidentally added a new metadata file to a package directory corresponding to an unlocked package but where the same metadata file is not supported for unlocked packaging.
+The Metadata Coverage Report can tell you but you still have to look for these new metadata files and check the Metadata Coverage Report for them. This plugin can automate this process for you.
+
+Maybe you plan to modernise an existing Salesforce implementation which exists as a source code repository but is still of the happy-soup kind of implementation, e.g. all customizations in one large implementation and deployments using the Metadata API for full or incremental deployments. Now you're planning to modularise this big implementation into several unlocked packages and ask yourself how much additional work you have to do for parts of the implementation that are not supported in unlocked packages. This plugin can provide you with a detailed list of components that are not supported by the targeted deployment mechanism. (To be clear, this plugin is not targeted at helping find the right componentisation of your implementation into individual unlocked packages).
+
 ## Installation into the Salesforce CLI
 
 ```bash
