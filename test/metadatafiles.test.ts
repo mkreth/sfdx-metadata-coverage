@@ -6,9 +6,11 @@
  */
 
 import fs = require('fs');
-import asyncFs = require('fs/promises');
-import { assert, expect } from 'chai';
+import { expect, use as chaiUse } from 'chai';
+import chaiAsPromised = require('chai-as-promised');
 import findMetadataFiles from '../src/metadatafiles';
+
+chaiUse(chaiAsPromised);
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-var-requires
 const sandbox = require('sinon').createSandbox();
@@ -62,7 +64,7 @@ const prepareFsStubs = function () {
   statStub.withArgs('error3/classes/Foo.cls').callsArgWith(1, null, fileStats);
   statStub.withArgs('error3/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
 
-  const readFileStub = sandbox.stub(asyncFs, 'readFile');
+  const readFileStub = sandbox.stub(fs, 'readFile');
 
   const metadataXml = [
     {
@@ -97,7 +99,7 @@ const prepareFsStubs = function () {
     },
   ];
   metadataXml.forEach((mdFile) => {
-    readFileStub.withArgs(mdFile.path).resolves(mdFile.xml);
+    readFileStub.withArgs(mdFile.path).callsArgWith(1, null, mdFile.xml);
   });
 };
 
@@ -163,46 +165,29 @@ describe('findMetadataFiles', function () {
   });
 
   it('should throw an error when a directory does not exist', async function () {
-    let error = null;
-
-    try {
-      await findMetadataFiles('src', 'src2');
-      assert.fail('did not throw the expected error');
-    } catch (ex) {
-      error = ex.message;
-    }
-
-    expect(error).to.be.eq("ENOENT: no such file or directory, scandir 'src2'");
+    await expect(findMetadataFiles('src', 'src2')).to.be.rejectedWith(
+      "ENOENT: no such file or directory, scandir 'src2'"
+    );
   });
 
   describe('should throw an error when a metadata file is invalid', function () {
     it('empty metadata file', async function () {
-      try {
-        await findMetadataFiles('error1');
-        assert.fail('expected error not thrown');
-      } catch (error) {
-        expect(error.message).to.be.eq('could not read metadata file error1/classes/Foo.cls-meta.xml');
-      }
+      await expect(findMetadataFiles('error1')).to.be.rejectedWith(
+        'could not read metadata file error1/classes/Foo.cls-meta.xml'
+      );
     });
 
     it('file names ...-meta.xml but not a XML file', async function () {
-      try {
-        await findMetadataFiles('error2');
-        assert.fail('expected error not thrown');
-      } catch (error) {
-        expect(error.message).to.be.eq(
-          'could not read metadata file error2/classes/Foo.cls-meta.xml - caused by: Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: G'
-        );
-      }
+      await expect(findMetadataFiles('error2')).to.be.rejectedWith(
+        'could not read metadata file error2/classes/Foo.cls-meta.xml - caused by: Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: G'
+      );
     });
 
     it('metadata file with only xml preamble', async function () {
-      try {
-        await findMetadataFiles('error3');
-        assert.fail('expected error not thrown');
-      } catch (error) {
-        expect(error.message).to.be.eq('could not read metadata file error3/classes/Foo.cls-meta.xml');
-      }
+      await expect(findMetadataFiles('error3')).to.be.rejectedWith(
+        'could not read metadata file error3/classes/Foo.cls-meta.xml'
+      );
+    });
     });
   });
 });

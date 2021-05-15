@@ -6,9 +6,9 @@
  */
 
 import { basename, dirname } from 'path';
-import { Stats } from 'fs';
-import { readFile } from 'fs/promises';
+import { readFile, Stats } from 'fs';
 import { parseStringPromise } from 'xml2js';
+import { JsonMap } from '@salesforce/ts-types';
 import recursiveReaddir = require('recursive-readdir');
 
 export type MetadataFile = {
@@ -22,10 +22,22 @@ function ignoreNonMetaXmlFiles(file: string, stats: Stats): boolean {
   return stats.isFile() && !basename(file).endsWith('-meta.xml');
 }
 
-async function readFileJson(file: string): Promise<unknown> {
+function readFileAsync(file: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    readFile(file, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
+
+async function readFileJson(file: string): Promise<JsonMap> {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-return */
   try {
-    const data = await readFile(file);
+    const data = await readFileAsync(file);
     const fileJson = await parseStringPromise(data);
 
     return fileJson;
