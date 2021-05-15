@@ -1,5 +1,6 @@
 {
   "nyc": {
     "extends": "@salesforce/dev-config/nyc"
-  }
+  },
+  "reporter": ["lcov"]
 }
