@@ -49,7 +49,7 @@ async function readFileJson(file: string): Promise<JsonMap> {
 
 export default function findMetadataFiles(...directories: string[]): Promise<MetadataFile[]> {
   if (!directories || !directories.length) {
-    throw new Error('no directories with metadata files');
+    return Promise.reject('no directories with metadata files');
   }
 
   return Promise.all(

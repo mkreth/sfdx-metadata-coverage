@@ -158,16 +158,7 @@ describe('findMetadataFiles', function () {
   });
 
   it('should throw an error when no directories given', async function () {
-    let error = null;
-
-    try {
-      await findMetadataFiles();
-      assert.fail('did not throw the expected error');
-    } catch (ex) {
-      error = ex.message;
-    }
-
-    expect(error).to.be.eq('no directories with metadata files');
+    await expect(findMetadataFiles()).to.be.rejectedWith('no directories with metadata files');
   });
 
   it('should throw an error when a directory does not exist', async function () {
