@@ -34,6 +34,8 @@ const prepareFsStubs = function () {
   readdirStub.withArgs('error2/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
   readdirStub.withArgs('error3').callsArgWith(1, null, ['classes']);
   readdirStub.withArgs('error3/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
+  readdirStub.withArgs('error4').callsArgWith(1, null, ['classes']);
+  readdirStub.withArgs('error4/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
 
   const dirStats = {
     isFile: () => false,
@@ -63,6 +65,9 @@ const prepareFsStubs = function () {
   statStub.withArgs('error3/classes').callsArgWith(1, null, dirStats);
   statStub.withArgs('error3/classes/Foo.cls').callsArgWith(1, null, fileStats);
   statStub.withArgs('error3/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
+  statStub.withArgs('error4/classes').callsArgWith(1, null, dirStats);
+  statStub.withArgs('error4/classes/Foo.cls').callsArgWith(1, null, fileStats);
+  statStub.withArgs('error4/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
 
   const readFileStub = sandbox.stub(fs, 'readFile');
 
@@ -101,6 +106,7 @@ const prepareFsStubs = function () {
   metadataXml.forEach((mdFile) => {
     readFileStub.withArgs(mdFile.path).callsArgWith(1, null, mdFile.xml);
   });
+  readFileStub.withArgs('error4/classes/Foo.cls-meta.xml').callsArgWith(1, new Error('failed'), null);
 };
 
 describe('findMetadataFiles', function () {
@@ -188,6 +194,11 @@ describe('findMetadataFiles', function () {
         'could not read metadata file error3/classes/Foo.cls-meta.xml'
       );
     });
+
+    it('metadata file not readable', async function () {
+      await expect(findMetadataFiles('error4')).to.be.rejectedWith(
+        'could not read metadata file error4/classes/Foo.cls-meta.xml - caused by: failed'
+      );
     });
   });
 });
