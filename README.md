@@ -1,6 +1,6 @@
 # sfdx-project-metadata-coverage
 
-[![Build](https://github.com/mkreth/sfdx-metadata-coverage/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/mkreth/sfdx-metadata-coverage/actions/workflows/build-and-test.xml) [![codecov](https://codecov.io/gh/mkreth/sfdx-metadata-coverage/branch/main/graph/badge.svg?token=9RZC1H18ZQ)](https://codecov.io/gh/mkreth/sfdx-metadata-coverage)
+[![Build](https://github.com/mkreth/sfdx-metadata-coverage/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/mkreth/sfdx-metadata-coverage/actions/workflows/build-and-test.yml) [![codecov](https://codecov.io/gh/mkreth/sfdx-metadata-coverage/branch/main/graph/badge.svg?token=9RZC1H18ZQ)](https://codecov.io/gh/mkreth/sfdx-metadata-coverage)
 
 This plugin displays information from the [Metadata Coverage Report](https://developer.salesforce.com/docs/metadata-coverage) for metadata files in a SFDX project.
 
