@@ -6,9 +6,11 @@
  */
 
 import fs = require('fs');
+import sinon = require('sinon');
 import { expect, use as chaiUse } from 'chai';
 import chaiAsPromised = require('chai-as-promised');
 import findMetadataFiles from '../src/metadatafiles';
+import * as recursivereaddir from '../src/recursivereaddir';
 
 chaiUse(chaiAsPromised);
 
@@ -18,56 +20,21 @@ const sandbox = require('sinon').createSandbox();
 const prepareFsStubs = function () {
   /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
 
-  const readdirStub = sandbox.stub(fs, 'readdir');
+  const rrdStub = sandbox.stub(recursivereaddir, 'recursiveReaddir');
 
-  readdirStub.withArgs('src').callsArgWith(1, null, ['classes', 'objects']);
-  readdirStub.withArgs('src/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
-  readdirStub.withArgs('src/objects').callsArgWith(1, null, ['Foo__c']);
-  readdirStub.withArgs('src/objects/Foo__c').callsArgWith(1, null, ['Foo__c.object-meta.xml', 'fields']);
-  readdirStub.withArgs('src/objects/Foo__c/fields').callsArgWith(1, null, ['DummyField__c.field-meta.xml']);
-  // behaviour for missing directory src2
-  readdirStub.withArgs('src2').throws(new Error("ENOENT: no such file or directory, scandir 'src2'"));
-  // behaviour for directories with invalid source files
-  readdirStub.withArgs('error1').callsArgWith(1, null, ['classes']);
-  readdirStub.withArgs('error1/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
-  readdirStub.withArgs('error2').callsArgWith(1, null, ['classes']);
-  readdirStub.withArgs('error2/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
-  readdirStub.withArgs('error3').callsArgWith(1, null, ['classes']);
-  readdirStub.withArgs('error3/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
-  readdirStub.withArgs('error4').callsArgWith(1, null, ['classes']);
-  readdirStub.withArgs('error4/classes').callsArgWith(1, null, ['Foo.cls', 'Foo.cls-meta.xml']);
-
-  const dirStats = {
-    isFile: () => false,
-    isDirectory: () => true,
-  };
-  const fileStats = {
-    isFile: () => true,
-    isDirectory: () => false,
-  };
-  const statStub = sandbox.stub(fs, 'stat');
-
-  statStub.withArgs('src/classes').callsArgWith(1, null, dirStats);
-  statStub.withArgs('src/classes/Foo.cls').callsArgWith(1, null, fileStats);
-  statStub.withArgs('src/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
-  statStub.withArgs('src/objects').callsArgWith(1, null, dirStats);
-  statStub.withArgs('src/objects/Foo__c').callsArgWith(1, null, dirStats);
-  statStub.withArgs('src/objects/Foo__c/Foo__c.object-meta.xml').callsArgWith(1, null, fileStats);
-  statStub.withArgs('src/objects/Foo__c/fields').callsArgWith(1, null, dirStats);
-  statStub.withArgs('src/objects/Foo__c/fields/DummyField__c.field-meta.xml').callsArgWith(1, null, fileStats);
-  // behaviour for directories with invalid source files
-  statStub.withArgs('error1/classes').callsArgWith(1, null, dirStats);
-  statStub.withArgs('error1/classes/Foo.cls').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error1/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error2/classes').callsArgWith(1, null, dirStats);
-  statStub.withArgs('error2/classes/Foo.cls').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error2/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error3/classes').callsArgWith(1, null, dirStats);
-  statStub.withArgs('error3/classes/Foo.cls').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error3/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error4/classes').callsArgWith(1, null, dirStats);
-  statStub.withArgs('error4/classes/Foo.cls').callsArgWith(1, null, fileStats);
-  statStub.withArgs('error4/classes/Foo.cls-meta.xml').callsArgWith(1, null, fileStats);
+  rrdStub
+    .withArgs('src', sinon.match.any)
+    .resolves([
+      'src/classes/Foo.cls-meta.xml',
+      'src/objects/Foo__c/Foo__c.object-meta.xml',
+      'src/objects/Foo__c/fields/DummyField__c.field-meta.xml',
+    ]);
+  rrdStub.withArgs('src/classes', sinon.match.any).resolves(['src/classes/Foo.cls-meta.xml']);
+  rrdStub.withArgs('src2', sinon.match.any).rejects(new Error("ENOENT: no such file or directory, scandir 'src2'"));
+  rrdStub.withArgs('error1', sinon.match.any).resolves(['error1/classes/Foo.cls-meta.xml']);
+  rrdStub.withArgs('error2', sinon.match.any).resolves(['error2/classes/Foo.cls-meta.xml']);
+  rrdStub.withArgs('error3', sinon.match.any).resolves(['error3/classes/Foo.cls-meta.xml']);
+  rrdStub.withArgs('error4', sinon.match.any).resolves(['error4/classes/Foo.cls-meta.xml']);
 
   const readFileStub = sandbox.stub(fs, 'readFile');
 
