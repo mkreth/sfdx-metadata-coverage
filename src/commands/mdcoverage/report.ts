@@ -19,9 +19,14 @@ type MetadataFileCoverage = {
   coverage: MetadataTypeCoverageChannels;
 };
 
-type Response = {
-  message?: string;
-  metadataCoverageReport?: MetadataFileCoverage[];
+type MetadataFileCoverageResponse = {
+  file: MetadataFile;
+  metadataApi?: boolean;
+  sourceTracking?: boolean;
+  unlockedPackagingWithoutNamespace?: boolean;
+  unlockedPackagingWithNamespace?: boolean;
+  managedPackaging?: boolean;
+  changeSets?: boolean;
 };
 
 type ChannelFlag = {
@@ -124,9 +129,7 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     return flagsConfig;
   }
 
-  public async run(): Promise<Response> {
-    const response: Response = {};
-
+  public async run(): Promise<MetadataFileCoverageResponse[]> {
     try {
       this.ux.startSpinner(messages.getMessage('statusSearchingMetadataMessage'));
       const metadataFiles = await this.findMetadataFiles();
@@ -134,8 +137,7 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
       // exit if there are no metadata files
       if (metadataFiles.length === 0) {
         this.ux.warn('No metadata files found - exiting');
-        response.message = 'WARN - no metadata files found';
-        return response;
+        return [];
       }
 
       this.ux.startSpinner(messages.getMessage('statusFetchMetadataCoverageMessage'));
@@ -159,14 +161,16 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
         })
         .filter((metadataFileCoverage) => metadataFileCoverage !== undefined);
 
+      const filteredMetadataFileCoverages = this.filteredMetadataFileCoverages(metadataFileCoverages);
+
       this.ux.stopSpinner(messages.getMessage('statusFinishedMessage'));
 
-      this.printResultTable(metadataFileCoverages);
+      this.printResultTable(filteredMetadataFileCoverages);
 
       // return the metadata files and their coverage information
-      response.metadataCoverageReport = metadataFileCoverages;
+      const metadataCoverageReportResponse = this.reducedMetadataFileCoverages(filteredMetadataFileCoverages);
 
-      return response;
+      return metadataCoverageReportResponse;
     } catch (ex) {
       this.ux.error(ex);
       throw new SfdxError(ex);
@@ -198,21 +202,57 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     return fetchMetadataCoverageReport();
   }
 
-  private includeAllChecks(): boolean {
+  private filteredChannelFlags(): string[] {
     const anyCheckFlagPresent = Object.keys(CHECK_CHANNEL_FLAGS)
       .map((flag) => this.flags[flag] as boolean)
-      .reduce((prev, curr) => prev || curr);
+      .reduce((prev, curr) => prev || curr, false);
+    const includeAllFlags = !anyCheckFlagPresent;
+    const filterFlags = Object.keys(CHECK_CHANNEL_FLAGS).filter(
+      (flag) => includeAllFlags || (this.flags[flag] as boolean)
+    );
+    return filterFlags;
+  }
 
-    if (anyCheckFlagPresent) {
-      return false;
-    }
+  private filteredMetadataFileCoverages(metadataFiles: MetadataFileCoverage[]): MetadataFileCoverage[] {
+    const showUncoveredOnly = this.flags.showuncovered as boolean;
+    const filteredChannelFlags = this.filteredChannelFlags();
 
-    return true;
+    const filteredMetadataFiles = metadataFiles.filter((metadataFile) => {
+      let include = true;
+      if (showUncoveredOnly) {
+        const selectedChannelsCoverage = filteredChannelFlags.map(
+          (flag) => metadataFile.coverage[CHECK_CHANNEL_FLAGS[flag].key]
+        );
+        const allChannelsCovered = selectedChannelsCoverage.reduce((prev, curr) => prev && curr, true);
+
+        include = !allChannelsCovered;
+      }
+      return include;
+    });
+
+    return filteredMetadataFiles;
+  }
+
+  private reducedMetadataFileCoverages(metadataFiles: MetadataFileCoverage[]): MetadataFileCoverageResponse[] {
+    const filteredChannelFlags = this.filteredChannelFlags();
+    const reducedMetadataFileCoverages = metadataFiles.map((metadataFile) => {
+      const metadataFileCoverageResponse: MetadataFileCoverageResponse = {
+        file: metadataFile.file,
+      };
+      filteredChannelFlags.forEach((flag) => {
+        const key = CHECK_CHANNEL_FLAGS[flag].key;
+        const channelCoverage = metadataFile.coverage[key];
+        metadataFileCoverageResponse[key] = channelCoverage;
+      });
+      return metadataFileCoverageResponse;
+    });
+
+    return reducedMetadataFileCoverages;
   }
 
   private printResultTable(metadataFiles: MetadataFileCoverage[]): void {
-    const showUncoveredOnly = this.flags.showuncovered as boolean;
-    const filteredMetadataFiles = showUncoveredOnly ? this.filterUncoveredMetadataFiles(metadataFiles) : metadataFiles;
+    // const showUncoveredOnly = this.flags.showuncovered as boolean;
+    // const filteredMetadataFiles = showUncoveredOnly ? this.filterUncoveredMetadataFiles(metadataFiles) : metadataFiles;
 
     const options: TableOptions = {
       columns: [
@@ -222,29 +262,19 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
       ],
     };
 
-    const includeAllChecks = this.includeAllChecks();
-    Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
-      if (includeAllChecks || (this.flags[flag] as boolean)) {
-        const channel = CHECK_CHANNEL_FLAGS[flag];
-        options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
-      }
+    const filteredChannelFlags = this.filteredChannelFlags();
+    filteredChannelFlags.forEach((flag) => {
+      const channel = CHECK_CHANNEL_FLAGS[flag];
+      options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
     });
+    // const includeAllChecks = this.includeAllChecks();
+    // Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
+    //   if (includeAllChecks || (this.flags[flag] as boolean)) {
+    //     const channel = CHECK_CHANNEL_FLAGS[flag];
+    //     options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
+    //   }
+    // });
 
-    this.ux.table(filteredMetadataFiles, options);
-  }
-
-  private filterUncoveredMetadataFiles(metadataFiles: MetadataFileCoverage[]): MetadataFileCoverage[] {
-    const includeAllChecks: boolean = this.includeAllChecks();
-    const filterFlags = Object.keys(CHECK_CHANNEL_FLAGS).filter(
-      (flag) => includeAllChecks || (this.flags[flag] as boolean)
-    );
-    const filteredMetadataFiles = metadataFiles.filter((metadataFile) => {
-      const channelCoverage = filterFlags.map((flag) => metadataFile.coverage[CHECK_CHANNEL_FLAGS[flag].key]);
-      const allChannelsCovered = channelCoverage.reduce((prev, curr) => prev && curr, true);
-      const anyChannelUncovered = !allChannelsCovered;
-      return anyChannelUncovered;
-    });
-
-    return filteredMetadataFiles;
+    this.ux.table(metadataFiles, options);
   }
 }
