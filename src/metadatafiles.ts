@@ -9,7 +9,7 @@ import { basename, dirname } from 'path';
 import { readFile, Stats } from 'fs';
 import { parseStringPromise } from 'xml2js';
 import { JsonMap } from '@salesforce/ts-types';
-import recursiveReaddir = require('recursive-readdir');
+import { recursiveReaddir } from './recursivereaddir';
 
 export type MetadataFile = {
   path: string;
