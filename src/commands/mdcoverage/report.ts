@@ -251,9 +251,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
   }
 
   private printResultTable(metadataFiles: MetadataFileCoverage[]): void {
-    // const showUncoveredOnly = this.flags.showuncovered as boolean;
-    // const filteredMetadataFiles = showUncoveredOnly ? this.filterUncoveredMetadataFiles(metadataFiles) : metadataFiles;
-
     const options: TableOptions = {
       columns: [
         { key: 'file.type', label: messages.getMessage('columnTypeLabel') },
@@ -267,13 +264,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
       const channel = CHECK_CHANNEL_FLAGS[flag];
       options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
     });
-    // const includeAllChecks = this.includeAllChecks();
-    // Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
-    //   if (includeAllChecks || (this.flags[flag] as boolean)) {
-    //     const channel = CHECK_CHANNEL_FLAGS[flag];
-    //     options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
-    //   }
-    // });
 
     this.ux.table(metadataFiles, options);
   }
