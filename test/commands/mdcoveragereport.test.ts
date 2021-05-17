@@ -212,6 +212,137 @@ describe('mdcoverage:report', () => {
       expect(process.exitCode).to.equal(0);
     });
 
+  test
+    .do(() => {
+      $$.SANDBOX.stub(SfdxProject.prototype, 'getUniquePackageDirectories').returns([
+        { name: 'force-app', path: 'force-app', fullPath: '' },
+      ]);
+
+      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
+        [string, RecursiveReaddirIgnores],
+        Promise<string[]>
+      >;
+
+      recursiveReaddirStub
+        .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
+        .rejects('recursiveReaddir NOT STUBBED for this arg')
+        .withArgs('force-app', $$.SANDBOX.match.any)
+        .resolves([
+          'force-app/assignmentRules/Case.assignmentRules-meta.xml',
+          'force-app/classes/ClsOne.cls-meta.xml',
+          'force-app/objects/Account/fields/FldOne.field-meta.xml',
+          'force-app/objects/ObjOne__c/ObjOne__c.object-meta.xml',
+        ]);
+
+      $$.SANDBOX.stub(fs, 'readFile')
+        .callThrough()
+        .withArgs('force-app/assignmentRules/Case.assignmentRules-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<AssignmentRules xmlns="http://soap.sforce.com/2006/04/metadata"/>`
+        )
+        .withArgs('force-app/classes/ClsOne.cls-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="urn:metadata.tooling.soap.sforce.com" fqn="ClsOne">
+</ApexClass>`
+        )
+        .withArgs('force-app/objects/Account/fields/FldOne.field-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+</CustomField>`
+        )
+        .withArgs('force-app/objects/ObjOne__c/ObjOne__c.object-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+</CustomObject>`
+        );
+
+      stubMetadataCoverageReport();
+    })
+    .stdout()
+    .stderr()
+    .command(['mdcoverage:report', '-d', 'force-app'])
+    .it('should run successful with sourcepath', () => {
+      expect(process.exitCode).to.equal(0);
+    });
+
+  test
+    .do(() => {
+      $$.SANDBOX.stub(SfdxProject.prototype, 'getUniquePackageDirectories').returns([
+        { name: 'force-app', path: 'force-app', fullPath: '' },
+      ]);
+      $$.SANDBOX.stub(SfdxProject.prototype, 'resolveProjectConfig').resolves({ sourceApiVersion: '50.0' });
+
+      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
+        [string, RecursiveReaddirIgnores],
+        Promise<string[]>
+      >;
+
+      recursiveReaddirStub
+        .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
+        .rejects('recursiveReaddir NOT STUBBED for this arg')
+        .withArgs('force-app', $$.SANDBOX.match.any)
+        .resolves([
+          'force-app/assignmentRules/Case.assignmentRules-meta.xml',
+          'force-app/classes/ClsOne.cls-meta.xml',
+          'force-app/objects/Account/fields/FldOne.field-meta.xml',
+          'force-app/objects/ObjOne__c/ObjOne__c.object-meta.xml',
+        ]);
+
+      $$.SANDBOX.stub(fs, 'readFile')
+        .callThrough()
+        .withArgs('force-app/assignmentRules/Case.assignmentRules-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<AssignmentRules xmlns="http://soap.sforce.com/2006/04/metadata"/>`
+        )
+        .withArgs('force-app/classes/ClsOne.cls-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="urn:metadata.tooling.soap.sforce.com" fqn="ClsOne">
+</ApexClass>`
+        )
+        .withArgs('force-app/objects/Account/fields/FldOne.field-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+</CustomField>`
+        )
+        .withArgs('force-app/objects/ObjOne__c/ObjOne__c.object-meta.xml', $$.SANDBOX.match.any)
+        .callsArgWith(
+          1,
+          null,
+          `<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+</CustomObject>`
+        );
+
+      stubMetadataCoverageReport();
+    })
+    .stdout()
+    .stderr()
+    .command(['mdcoverage:report'])
+    .it('should run successful in project with sourceApiVersion', () => {
+      expect(process.exitCode).to.equal(0);
+    });
+
   describe('should fail', () => {
     // command should fail without SFDX project
     test
