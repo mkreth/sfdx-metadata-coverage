@@ -188,12 +188,13 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     }
   }
 
-  private fetchMetadataCoverageReport(): Promise<MetadataCoverageReport> {
+  private async fetchMetadataCoverageReport(): Promise<MetadataCoverageReport> {
     if (this.flags.apiversion) {
       const flagApiVersion = this.flags.apiversion as string;
       return fetchMetadataCoverageReport(flagApiVersion);
     } else {
-      const sourceApiVersion = this.project.getSfdxProjectJson().get('sourceApiVersion') as string;
+      const projectConfig = await this.project.resolveProjectConfig();
+      const sourceApiVersion = projectConfig['sourceApiVersion'] as string;
       if (sourceApiVersion) {
         return fetchMetadataCoverageReport(sourceApiVersion);
       }
@@ -251,9 +252,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
   }
 
   private printResultTable(metadataFiles: MetadataFileCoverage[]): void {
-    // const showUncoveredOnly = this.flags.showuncovered as boolean;
-    // const filteredMetadataFiles = showUncoveredOnly ? this.filterUncoveredMetadataFiles(metadataFiles) : metadataFiles;
-
     const options: TableOptions = {
       columns: [
         { key: 'file.type', label: messages.getMessage('columnTypeLabel') },
@@ -267,13 +265,6 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
       const channel = CHECK_CHANNEL_FLAGS[flag];
       options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
     });
-    // const includeAllChecks = this.includeAllChecks();
-    // Object.keys(CHECK_CHANNEL_FLAGS).forEach((flag) => {
-    //   if (includeAllChecks || (this.flags[flag] as boolean)) {
-    //     const channel = CHECK_CHANNEL_FLAGS[flag];
-    //     options.columns.push({ key: channel.columnKey, label: messages.getMessage(channel.columnLabel) });
-    //   }
-    // });
 
     this.ux.table(metadataFiles, options);
   }
