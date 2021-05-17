@@ -188,12 +188,13 @@ Profile      Admin.profile   force-app/main/default/profiles  true          true
     }
   }
 
-  private fetchMetadataCoverageReport(): Promise<MetadataCoverageReport> {
+  private async fetchMetadataCoverageReport(): Promise<MetadataCoverageReport> {
     if (this.flags.apiversion) {
       const flagApiVersion = this.flags.apiversion as string;
       return fetchMetadataCoverageReport(flagApiVersion);
     } else {
-      const sourceApiVersion = this.project.getSfdxProjectJson().get('sourceApiVersion') as string;
+      const projectConfig = await this.project.resolveProjectConfig();
+      const sourceApiVersion = projectConfig['sourceApiVersion'] as string;
       if (sourceApiVersion) {
         return fetchMetadataCoverageReport(sourceApiVersion);
       }
