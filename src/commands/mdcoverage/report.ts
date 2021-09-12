@@ -5,8 +5,8 @@
  * For full license text, see file LICENSE.txt in the repository root.
  */
 
-import { core, flags, FlagsConfig, SfdxCommand, TableOptions } from '@salesforce/command';
-import { SfdxError } from '@salesforce/core';
+import { flags, FlagsConfig, SfdxCommand, TableOptions } from '@salesforce/command';
+import { Messages, SfdxError } from '@salesforce/core';
 
 import fetchMetadataCoverageReport from '../../coveragereport';
 import findMetadataFiles from '../../metadatafiles';
@@ -79,9 +79,9 @@ const CHECK_CHANNEL_FLAGS: ChannelFlags = {
   },
 };
 
-core.Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(__dirname);
 
-const messages = core.Messages.loadMessages('@mkreth/sfdx-metadata-coverage', 'coverage-report');
+const messages = Messages.loadMessages('@mkreth/sfdx-metadata-coverage', 'coverage-report');
 
 export default class CoverageReportCommand extends SfdxCommand {
   public static description = messages.getMessage('commandDescription');
