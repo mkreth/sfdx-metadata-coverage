@@ -62,10 +62,8 @@ describe('mdcoverage:report', () => {
         { name: 'force-app', path: 'force-app', fullPath: '' },
       ]);
 
-      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-        [string, RecursiveReaddirIgnores],
-        Promise<string[]>
-      >;
+      const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+      const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
       recursiveReaddirStub
         .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -127,10 +125,8 @@ describe('mdcoverage:report', () => {
         { name: 'force-app', path: 'force-app', fullPath: '' },
       ]);
 
-      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-        [string, RecursiveReaddirIgnores],
-        Promise<string[]>
-      >;
+      const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+      const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
       recursiveReaddirStub
         .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -153,10 +149,8 @@ describe('mdcoverage:report', () => {
         { name: 'force-app', path: 'force-app', fullPath: '' },
       ]);
 
-      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-        [string, RecursiveReaddirIgnores],
-        Promise<string[]>
-      >;
+      const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+      const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
       recursiveReaddirStub
         .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -218,10 +212,8 @@ describe('mdcoverage:report', () => {
         { name: 'force-app', path: 'force-app', fullPath: '' },
       ]);
 
-      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-        [string, RecursiveReaddirIgnores],
-        Promise<string[]>
-      >;
+      const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+      const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
       recursiveReaddirStub
         .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -284,10 +276,8 @@ describe('mdcoverage:report', () => {
       ]);
       $$.SANDBOX.stub(SfdxProject.prototype, 'resolveProjectConfig').resolves({ sourceApiVersion: '50.0' });
 
-      const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-        [string, RecursiveReaddirIgnores],
-        Promise<string[]>
-      >;
+      const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+      const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
       recursiveReaddirStub
         .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -416,10 +406,8 @@ describe('mdcoverage:report', () => {
           { name: 'force-app', path: 'force-app', fullPath: '' },
         ]);
 
-        const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-          [string, RecursiveReaddirIgnores],
-          Promise<string[]>
-        >;
+        const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+        const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
         recursiveReaddirStub
           .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -513,10 +501,8 @@ describe('mdcoverage:report', () => {
           { name: 'force-app', path: 'force-app', fullPath: '' },
         ]);
 
-        const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-          [string, RecursiveReaddirIgnores],
-          Promise<string[]>
-        >;
+        const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+        const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
         recursiveReaddirStub
           .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
@@ -626,10 +612,8 @@ describe('mdcoverage:report', () => {
           { name: 'force-app', path: 'force-app', fullPath: '' },
         ]);
 
-        const recursiveReaddirStub = ($$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown) as SinonStub<
-          [string, RecursiveReaddirIgnores],
-          Promise<string[]>
-        >;
+        const stub = $$.SANDBOX.stub(recursivereaddir, 'recursiveReaddir') as unknown;
+        const recursiveReaddirStub = stub as SinonStub<[string, RecursiveReaddirIgnores], Promise<string[]>>;
 
         recursiveReaddirStub
           .withArgs($$.SANDBOX.match.any, $$.SANDBOX.match.any)
