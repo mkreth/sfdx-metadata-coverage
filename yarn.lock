@@ -656,10 +656,15 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/dev-config@^2.1.0", "@salesforce/dev-config@^2.1.2":
+"@salesforce/dev-config@^2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-2.1.2.tgz#b4e206f860e87065d068bf8ba3994a032389ad81"
   integrity sha512-1swy07rynHoTRk8lj6nuC0JceRBo300OuWnovQe2OMvLpQM5Dh1SUnv1SE8012PsrK9BC1WqGXp4BUyMo04x7w==
+
+"@salesforce/dev-config@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-3.0.0.tgz#a87e2cc310011a3364fc0a5d6c5550daa3192642"
+  integrity sha512-0ipbWqyDqaJ35Eg37rPYhymBEvvF8Zu8kpvDI08qEplt055cvSZ9At+w8tvrbVbr6KA0vlZbrXm5WyNEr9XChw==
 
 "@salesforce/dev-scripts@^1.0.2":
   version "1.0.2"
