@@ -2450,10 +2450,15 @@ eslint-config-salesforce-typescript@^0.2.7, eslint-config-salesforce-typescript@
   resolved "https://registry.yarnpkg.com/eslint-config-salesforce-typescript/-/eslint-config-salesforce-typescript-0.2.8.tgz#73cbc0e87a30118407d455feabf154fd251f7002"
   integrity sha512-CDPcYWIfEVJFbcNG6IdhKW3whp0MujjuM4uRFESQ1Eq4cO8bMbZrwbLypUWxdMgZz7Ua3luMHmIKgkmR4k9FSg==
 
-eslint-config-salesforce@^0.1.0, eslint-config-salesforce@^0.1.6:
+eslint-config-salesforce@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/eslint-config-salesforce/-/eslint-config-salesforce-0.1.6.tgz#47d7846d340df99db25962978e414e03404e5c2a"
   integrity sha512-QloeQzIka5Ruj6RfkfqeNPZoaR7wkz34AU/RABVdn/XBd23lk/l0/I/Hx3Rzx0G4dft/DBaHBL1JYllT0cWE1A==
+
+eslint-config-salesforce@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-config-salesforce/-/eslint-config-salesforce-1.0.2.tgz#3d0f25a28f494336f0d5bcc4cf591c453f8ed5bb"
+  integrity sha512-oMxbfL8SVM/pUNFL7CN1UP6L/J9U/JhLQATmEqcN1QVzJAHgT66vYc2Dwz5SL0Bbsqhk1sVFLY/8tLw6L+tHqQ==
 
 eslint-import-resolver-node@^0.3.6:
   version "0.3.6"
