@@ -590,6 +590,40 @@
     widest-line "^3.1.0"
     wrap-ansi "^7.0.0"
 
+"@oclif/core@^1.23.0", "@oclif/core@^1.23.1":
+  version "1.23.1"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.23.1.tgz#bebbbc4e02a4c1a4216d64165f892037f8a1e14a"
+  integrity sha512-nz7wVGesJ1Qg74p1KNKluZpQ3Z042mqdaRlczEI4Xwqj5s9jjdDBCDHNkiGzV4UAKzicVzipNj6qqhyUWKYnaA==
+  dependencies:
+    "@oclif/linewrap" "^1.0.0"
+    "@oclif/screen" "^3.0.3"
+    ansi-escapes "^4.3.2"
+    ansi-styles "^4.3.0"
+    cardinal "^2.1.1"
+    chalk "^4.1.2"
+    clean-stack "^3.0.1"
+    cli-progress "^3.10.0"
+    debug "^4.3.4"
+    ejs "^3.1.6"
+    fs-extra "^9.1.0"
+    get-package-type "^0.1.0"
+    globby "^11.1.0"
+    hyperlinker "^1.0.0"
+    indent-string "^4.0.0"
+    is-wsl "^2.2.0"
+    js-yaml "^3.14.1"
+    natural-orderby "^2.0.3"
+    object-treeify "^1.1.33"
+    password-prompt "^1.1.2"
+    semver "^7.3.7"
+    string-width "^4.2.3"
+    strip-ansi "^6.0.1"
+    supports-color "^8.1.1"
+    supports-hyperlinks "^2.2.0"
+    tslib "^2.4.1"
+    widest-line "^3.1.0"
+    wrap-ansi "^7.0.0"
+
 "@oclif/dev-cli@^1":
   version "1.26.10"
   resolved "https://registry.yarnpkg.com/@oclif/dev-cli/-/dev-cli-1.26.10.tgz#d8df3a79009b68552f5e7f249d1d19ca52278382"
@@ -732,13 +766,13 @@
   dependencies:
     fancy-test "^1.4.3"
 
-"@oclif/test@^2.2.12":
-  version "2.2.12"
-  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-2.2.12.tgz#bb97a8c678b349e0e323013be67d68f619e6aaf2"
-  integrity sha512-6s1XwvBTXHdVjVZY/qDgMl74NVvoy8MQoknqT/YfR9K3P/6fPW4xeZqemtvrvU4heM5kzSShta5sk0I28MXHMg==
+"@oclif/test@^2.2.17":
+  version "2.2.19"
+  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-2.2.19.tgz#6e60a2aff0ba514b479342b1bd5e27fe859a2947"
+  integrity sha512-hqxM8XHu/17fKop3AZkWtXjXnUcQDOz71De2fNPX533aYfADyVyG8mw4JtkLIUzbNxFm5km+zoYWe5YWKDOnyg==
   dependencies:
-    "@oclif/core" "^1.20.4"
-    fancy-test "^2.0.7"
+    "@oclif/core" "^1.23.1"
+    fancy-test "^2.0.10"
 
 "@salesforce/bunyan@^2.0.0":
   version "2.0.0"
@@ -783,14 +817,14 @@
     chalk "^2.4.2"
     cli-ux "^4.9.3"
 
-"@salesforce/command@^5.2.15":
-  version "5.2.27"
-  resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-5.2.27.tgz#6440102fb5213a456a3722b8f8ad6bc4ce890efa"
-  integrity sha512-Mjp+8YfKRcQEf2DpBa1AXuyNkW9eUwiwd37eNdxR/tyksc71EiJ1Ex3hWcN4rHHLecjoAIyjhm4juCn/vXw+Bg==
+"@salesforce/command@^5.2.35":
+  version "5.2.37"
+  resolved "https://registry.yarnpkg.com/@salesforce/command/-/command-5.2.37.tgz#e56fb991843261bb601d8836b3236d508021504c"
+  integrity sha512-v/yemTfiL9AQ8xiZD8xeJvsOfEFLocdFFVgA5nUbOlbEgN4RmJ19TiMdZPTQQ/l7kSFg4K5BUGmBVGqkHvc9Aw==
   dependencies:
-    "@oclif/core" "^1.20.4"
-    "@oclif/test" "^2.2.12"
-    "@salesforce/core" "^3.32.1"
+    "@oclif/core" "^1.23.0"
+    "@oclif/test" "^2.2.17"
+    "@salesforce/core" "^3.32.12"
     "@salesforce/kit" "^1.8.0"
     "@salesforce/ts-types" "^1.7.1"
     chalk "^2.4.2"
@@ -817,10 +851,10 @@
     sfdx-faye "^1.0.9"
     ts-retry-promise "^0.6.0"
 
-"@salesforce/core@^3.32.1", "@salesforce/core@^3.32.2":
-  version "3.32.5"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.5.tgz#45d3d0558907b5f1730ee3ee651247e723e3a2b3"
-  integrity sha512-nVw5fyfMLVQZEHs92Ld5l1EC6zuWmHIqUjLK6uoi/e26d3hOYDt/MWoz0sF2AinwVyqIp5kEFR0mmPqDKXNppg==
+"@salesforce/core@^3.32.12", "@salesforce/core@^3.32.2":
+  version "3.32.12"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.32.12.tgz#853cc5b6a5f95d4896b2d34a40a6042ef9aa6d2c"
+  integrity sha512-27rqSiQWul7b/OkJs19FYDv2M/S4oI4efiGv+6sR7UWv7D7CG1P+0XpgLS3d9xRYF30h98n6VQr4W2a+BWFRvA==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.8.0"
@@ -828,7 +862,7 @@
     "@salesforce/ts-types" "^1.5.21"
     "@types/graceful-fs" "^4.1.5"
     "@types/semver" "^7.3.13"
-    ajv "^8.11.0"
+    ajv "^8.11.2"
     archiver "^5.3.0"
     change-case "^4.1.2"
     debug "^3.2.7"
@@ -837,7 +871,7 @@
     graceful-fs "^4.2.9"
     js2xmlparser "^4.0.1"
     jsforce "^2.0.0-beta.19"
-    jsonwebtoken "8.5.1"
+    jsonwebtoken "9.0.0"
     ts-retry-promise "^0.7.0"
 
 "@salesforce/dev-config@^3.0.0", "@salesforce/dev-config@^3.1.0":
@@ -893,13 +927,13 @@
     shx "^0.3.3"
     tslib "^2.2.0"
 
-"@salesforce/plugin-command-reference@^1.5.3":
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-1.5.3.tgz#456177535695823d01bf20b4834d2dfbbde5221c"
-  integrity sha512-TE1Y7GFTuDiLAJpxD8QLJ/ZWDAi4aZW5fj7GmN3y2pkiruyAG5Nhx704Cu3JChn7tIvcQqD3VDDGw3FcwF9czQ==
+"@salesforce/plugin-command-reference@^1.5.10":
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-1.5.10.tgz#d894a08d6ccad2dfcd11ad2d2a3a636ba383b7ae"
+  integrity sha512-I3AnZGzo7wJGOLBRLOsLMwH0mZTzhLF303d4crdB3ykDwzgRAAKdRTHmG5RAczs4DZNCaPC8fH75Yq8RbfMDlA==
   dependencies:
-    "@salesforce/command" "^5.2.15"
-    "@salesforce/core" "^3.32.2"
+    "@salesforce/command" "^5.2.35"
+    "@salesforce/core" "^3.32.12"
     "@types/lodash.uniqby" "^4.7.7"
     chalk "^3.0.0"
     handlebars "4.7.7"
@@ -1348,7 +1382,7 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-ajv@^8.11.0:
+ajv@^8.11.0, ajv@^8.11.2:
   version "8.11.2"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.11.2.tgz#aecb20b50607acf2569b6382167b65a96008bb78"
   integrity sha512-E4bfmKAhGiSTvMfL1Myyycaub+cUEU2/IvpylXkUu7CHBkBj1f/ikdzbD7YQ6FKUbixDxeYvB/xY4fvyroDlQg==
@@ -3146,10 +3180,10 @@ fancy-test@^1.4.3:
     nock "^13.0.0"
     stdout-stderr "^0.1.9"
 
-fancy-test@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/fancy-test/-/fancy-test-2.0.7.tgz#a5e8e23113384c5550914da4f429d10822622521"
-  integrity sha512-E9qiHMi/Wf3y0PLwoRbgr8SRTcvQY+6gx9d/qaVNT6N5AQ79iZr08ftY2Ki5KRC5LS02GoVD/CYT4t/KwwC/Pw==
+fancy-test@^2.0.10:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/fancy-test/-/fancy-test-2.0.11.tgz#27eb9fd5076114c609bd5ee6f5b9c8bd8ec67689"
+  integrity sha512-R98gMuHy/tsGUmChkehXvq4PmzdhUKl1SDyYkrvh4Vhc+8fjUUQWu2pts4Y4BStjkltPtQtccNYN63sjs/a3Xw==
   dependencies:
     "@types/chai" "*"
     "@types/lodash" "*"
@@ -4623,21 +4657,15 @@ jsonwebtoken@8.5.0:
     ms "^2.1.1"
     semver "^5.6.0"
 
-jsonwebtoken@8.5.1:
-  version "8.5.1"
-  resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-8.5.1.tgz#00e71e0b8df54c2121a1f26137df2280673bcc0d"
-  integrity sha512-XjwVfRS6jTMsqYs0EsuJ4LGxXV14zQybNd4L2r0UvbVnSF9Af8x7p5MzbJ90Ioz/9TI41/hTCvznF/loiSzn8w==
+jsonwebtoken@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.0.tgz#d0faf9ba1cc3a56255fe49c0961a67e520c1926d"
+  integrity sha512-tuGfYXxkQGDPnLJ7SibiQgVgeDgfbPq2k2ICcbgqW8WxWLBAxKQM/ZCu/IT8SOSwmaYl4dpTFCW5xZv7YbbWUw==
   dependencies:
     jws "^3.2.2"
-    lodash.includes "^4.3.0"
-    lodash.isboolean "^3.0.3"
-    lodash.isinteger "^4.0.4"
-    lodash.isnumber "^3.0.3"
-    lodash.isplainobject "^4.0.6"
-    lodash.isstring "^4.0.1"
-    lodash.once "^4.0.0"
+    lodash "^4.17.21"
     ms "^2.1.1"
-    semver "^5.6.0"
+    semver "^7.3.8"
 
 jsprim@^1.2.2:
   version "1.4.1"
